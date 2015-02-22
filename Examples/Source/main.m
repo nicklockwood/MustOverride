@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Nick Lockwood. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "MustOverride.h"
 
 
@@ -20,7 +20,7 @@
 @implementation AbstractBaseClass
 
 - (void)optionalOverride
-{
+{  
     NSLog(@"Optional");
 }
 
@@ -46,7 +46,7 @@
 @end
 
 
-int main(int argc, const char * argv[])
+int main(__unused int argc, __unused const char * argv[])
 {
     @autoreleasepool
     {

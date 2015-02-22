@@ -1,7 +1,7 @@
 //
 //  MustOverride.m
 //
-//  Version 1.0
+//  Version 1.1
 //
 //  Created by Nick Lockwood on 22/02/2015.
 //  Copyright (c) 2015 Nick Lockwood
@@ -67,38 +67,47 @@ static BOOL ClassOverridesMethod(Class cls, SEL selector)
             return YES;
         }
     }
+    free(methods);
     return NO;
 }
 
 static NSArray *SubclassesOfClass(Class baseClass)
 {
+    static Class *classes;
+    static unsigned int classCount;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      classes = objc_copyClassList(&classCount);
+    });
+
     NSMutableArray *subclasses = [NSMutableArray array];
-    unsigned int classCount;
-    Class *classes = objc_copyClassList(&classCount);
     for (unsigned int i = 0; i < classCount; i++)
     {
         Class cls = classes[i];
-        Class superclass = class_getSuperclass(cls);
-        if (!superclass) continue; // No superclass - probably something weird
-
-        if ([cls isSubclassOfClass:baseClass])
+        Class superclass = cls;
+        while (superclass)
         {
-            [subclasses addObject:cls];
+            if (superclass == baseClass)
+            {
+                [subclasses addObject:cls];
+                break;
+            }
+            superclass = class_getSuperclass(superclass);
         }
     }
-    free(classes);
     return subclasses;
 }
 
 static void CheckOverrides(void)
 {
     Dl_info info;
-    dladdr(&CheckOverrides, &info);
+    dladdr((const void *)&CheckOverrides, &info);
 
     const MustOverrideValue mach_header = (MustOverrideValue)info.dli_fbase;
     const MustOverrideSection *section = GetSectByNameFromHeader((void *)mach_header, "__DATA", "MustOverride");
     if (section == NULL) return;
 
+    NSMutableArray *failures = [NSMutableArray array];
     for (MustOverrideValue addr = section->offset; addr < section->offset + section->size; addr += sizeof(const char **))
     {
         NSString *entry = @(*(const char **)(mach_header + addr));
@@ -110,10 +119,16 @@ static void CheckOverrides(void)
 
         for (Class subclass in SubclassesOfClass(cls))
         {
-            NSCAssert(ClassOverridesMethod(isClassMethod ? object_getClass(subclass) : subclass, selector),
-                      @"Class '%@' does not implement required method '%@'", subclass, parts[1]);
+            if (!ClassOverridesMethod(isClassMethod ? object_getClass(subclass) : subclass, selector))
+            {
+              [failures addObject:[NSString stringWithFormat:@"%@ does not implement required method %c%@", subclass, isClassMethod ? '+' : '-', parts[1]]];
+            }
         }
     }
+
+    NSCAssert(failures.count == 0, @"%@%@",
+              failures.count > 1 ? [NSString stringWithFormat:@"%zd method override errors:\n", failures.count] : @"",
+              [failures componentsJoinedByString:@"\n"]);
 }
 
 + (void)load
