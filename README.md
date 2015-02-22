@@ -37,7 +37,25 @@ Like this:
         SUBCLASS_MUST_OVERRIDE;
     }
 
+
 Credits
 --------------
 
 Big thanks to Dan Tomlinson (@dantoml) for the inspiration, and Alex Akers (@a2) for the section data trick used to register the methods.
+
+
+Release Notes
+--------------
+
+Version 1.1
+
+- Now correctly detects methods that are defined in categories.
+- Now reports all override errors, not just the first encountered.
+- Fixed memory leak in ClassOverridesMethod.
+- Performance optimization in SubclassesOfClass.
+- Compliant with -Weverything warning level.
+- Added Podspec.
+
+Version 1.0
+
+- Initial release.
