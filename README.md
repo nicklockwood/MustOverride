@@ -3,7 +3,7 @@ Purpose
 
 MustOverride provides a macro that you can use to ensure that a method of an abstract base class *must* be overriden by its subclasses.
 
-Apple does not currently provide a way to flag this at runtime, and the standard approach of raising an exception in the base class's implementation has two disadvantages: 1) it means that the method will only crash when it is called, which might only happen under difficult-to-reproduce conditions, and 2) you cannot provide a base implementation and require that the subclass calls super.
+Apple does not currently provide a way to flag this at compile time, and the standard approach of raising an exception in the base class's implementation has two disadvantages: 1) it means that the method will only crash when it is called, which might only happen under difficult-to-reproduce conditions, and 2) you cannot provide a base implementation and require that the subclass calls super.
 
 MustOverride uses some runtime magic to scan the class list and at load time, and will crash *immediately* when the app first runs if the method is not implemented, even if it is never called.
 
