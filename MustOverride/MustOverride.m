@@ -32,6 +32,8 @@
 
 #import "MustOverride.h"
 
+#if DEBUG
+
 #import <dlfcn.h>
 #import <mach-o/getsect.h>
 #import <mach-o/dyld.h>
@@ -120,3 +122,5 @@ static void CheckOverrides(void)
 }
 
 @end
+
+#endif
