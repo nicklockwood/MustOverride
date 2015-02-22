@@ -33,6 +33,17 @@
 
 @end
 
+@implementation AbstractBaseClass (ExtraMethods)
+
+- (void)alsoMustOverride
+{
+  SUBCLASS_MUST_OVERRIDE;
+
+  NSLog(@"Also Must");
+}
+
+@end
+
 
 @interface ConcreteSubclass : AbstractBaseClass
 

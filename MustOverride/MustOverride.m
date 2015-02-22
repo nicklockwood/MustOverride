@@ -112,9 +112,15 @@ static void CheckOverrides(void)
     {
         NSString *entry = @(*(const char **)(mach_header + addr));
         NSArray *parts = [[entry substringWithRange:NSMakeRange(2, entry.length - 3)] componentsSeparatedByString:@" "];
+        NSString *className = parts[0];
+        NSRange categoryRange = [className rangeOfString:@"("];
+        if (categoryRange.length)
+        {
+            className = [className substringToIndex:categoryRange.location];
+        }
 
         BOOL isClassMethod = [entry characterAtIndex:0] == '+';
-        Class cls = NSClassFromString(parts[0]);
+        Class cls = NSClassFromString(className);
         SEL selector = NSSelectorFromString(parts[1]);
 
         for (Class subclass in SubclassesOfClass(cls))
