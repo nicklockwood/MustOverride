@@ -84,7 +84,7 @@ static NSArray *SubclassesOfClass(Class baseClass)
     for (unsigned int i = 0; i < classCount; i++)
     {
         Class cls = classes[i];
-        Class superclass = cls;
+        Class superclass = class_getSuperclass(cls);
         while (superclass)
         {
             if (superclass == baseClass)
