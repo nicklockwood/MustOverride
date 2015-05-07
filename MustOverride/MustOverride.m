@@ -127,8 +127,8 @@ static void CheckOverrides(void)
         {
             if (!ClassOverridesMethod(isClassMethod ? object_getClass(subclass) : subclass, selector))
             {
-                [failures addObject:[NSString stringWithFormat:@"%@ does not implement required method %c%@",
-                                     subclass, isClassMethod ? '+' : '-', parts[1]]];
+                [failures addObject:[NSString stringWithFormat:@"%@ does not implement method %c%@ required by %@",
+                                     subclass, isClassMethod ? '+' : '-', parts[1], className]];
             }
         }
     }
