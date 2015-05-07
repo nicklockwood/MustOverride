@@ -71,6 +71,22 @@ static BOOL ClassOverridesMethod(Class cls, SEL selector)
     return NO;
 }
 
+static BOOL ClassOrSuperclassOverridesMethod(Class base, Class cls, SEL selector)
+{
+    BOOL overrides = NO;
+    Class superclass = cls;
+    while (superclass && superclass != base)
+    {
+        overrides = ClassOverridesMethod(superclass, selector);
+        if (overrides)
+        {
+            break;
+        }
+        superclass = class_getSuperclass(superclass);
+    }
+    return overrides;
+}
+
 static NSArray *SubclassesOfClass(Class baseClass)
 {
     static Class *classes;
@@ -84,7 +100,7 @@ static NSArray *SubclassesOfClass(Class baseClass)
     for (unsigned int i = 0; i < classCount; i++)
     {
         Class cls = classes[i];
-        Class superclass = cls;
+        Class superclass = class_getSuperclass(cls);
         while (superclass)
         {
             if (superclass == baseClass)
@@ -125,7 +141,7 @@ static void CheckOverrides(void)
 
         for (Class subclass in SubclassesOfClass(cls))
         {
-            if (!ClassOverridesMethod(isClassMethod ? object_getClass(subclass) : subclass, selector))
+            if (!ClassOrSuperclassOverridesMethod(cls, isClassMethod ? object_getClass(subclass) : subclass, selector))
             {
                 [failures addObject:[NSString stringWithFormat:@"%@ does not implement method %c%@ required by %@",
                                      subclass, isClassMethod ? '+' : '-', parts[1], className]];
