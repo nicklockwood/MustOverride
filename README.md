@@ -1,7 +1,7 @@
 Purpose
 --------------
 
-MustOverride provides a macro that you can use to ensure that a method of an abstract base class *must* be overriden by its subclasses.
+MustOverride provides a macro that you can use to ensure that a method of an abstract base class *must* be overridden by its subclasses.
 
 Apple does not currently provide a way to flag this at compile time, and the standard approach of raising an exception in the base class's implementation has two disadvantages: 1) it means that the method will only crash when it is called, which might only happen under difficult-to-reproduce conditions, and 2) you cannot provide a base implementation and require that the subclass calls super.
 
@@ -26,7 +26,7 @@ Works with or without ARC enabled.
 Installation
 --------------
 
-To install MustOverride into your app, drag the MustOverride.h and .m files into your project. To use it, just import the MustOverride.h header file into any class, and then add the following macro inside the body of any method that must be overriden:
+To install MustOverride into your app, drag the MustOverride.h and .m files into your project. To use it, just import the MustOverride.h header file into any class, and then add the following macro inside the body of any method that must be overridden:
 
     SUBCLASS_MUST_OVERRIDE;
     
