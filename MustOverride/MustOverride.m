@@ -125,10 +125,20 @@ static void CheckOverrides(void)
 
         for (Class subclass in SubclassesOfClass(cls))
         {
-            if (!ClassOverridesMethod(isClassMethod ? object_getClass(subclass) : subclass, selector))
-            {
-                [failures addObject:[NSString stringWithFormat:@"%@ does not implement method %c%@ required by %@",
-                                     subclass, isClassMethod ? '+' : '-', parts[1], className]];
+            if (subclass != cls){
+                Class superClass = subclass;
+                while (superClass != cls) {
+                    if (!ClassOverridesMethod(isClassMethod ? object_getClass(superClass) : superClass, selector)){
+                        superClass = class_getSuperclass(superClass);
+                    }else{
+                        break;
+                    }
+                }
+                if (superClass == cls)
+                {
+                    [failures addObject:[NSString stringWithFormat:@"%@ does not implement required method %c%@",
+                                         subclass, isClassMethod ? '+' : '-', parts[1]]];
+                }
             }
         }
     }
